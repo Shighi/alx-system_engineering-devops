@@ -1,0 +1,2 @@
+#!/bin/bash
+ls -A -1 --group-directories-first | awk '{printf "%s%s", $0, (/\/$/ ? ", " : ", ")} END {print ""}'
