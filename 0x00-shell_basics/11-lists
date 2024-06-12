@@ -1,2 +1,2 @@
 #!/bin/bash
-ls -lA . /.. /boot
+{ echo ".:"; ls -la; } | cat && { echo "/..:"; ls -la /..; } | cat && { echo "/boot:"; ls -la /boot; }
