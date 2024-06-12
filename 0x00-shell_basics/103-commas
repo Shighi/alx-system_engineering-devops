@@ -1,2 +1,2 @@
 #!/bin/bash
-ls -a1p | grep -v "/$" | tr '\n' ',' | sed 's/,$/\n/' | sed 's/ /, /g' | sed 's/\.\//.\//g'
+(ls -a1 | sed 's/$/,/' | tr '\n' ' ' | sed 's/, $/\n/' | sed 's/\/,/,/g') | sed 's/, \./., \.\.,/'
