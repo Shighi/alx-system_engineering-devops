@@ -1,2 +1,2 @@
 #!/bin/bash
-echo ./, ../, $(ls -a1 --indicator-style=slash | sort -f | grep -v '^\.$' | grep -v '^\.\.$' | paste -sd, - | sed 's/,/, /g')
+ls -amvp
