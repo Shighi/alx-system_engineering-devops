@@ -1,2 +1,2 @@
 #!/bin/bash
-(ls -a1 | sed 's/$/,/' | tr '\n' ' ' | sed 's/, $/\n/' | sed 's/\/,/,/g') | sed 's/, \./., \.\.,/'
+(ls -a1 --indicator-style=slash | sort -f | sed 's/^/&, /;s/$//;1s/^.*$/., ../') | sed 's/\, $/\n/'
