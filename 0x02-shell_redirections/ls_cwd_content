@@ -1,0 +1,15 @@
+total 52
+drwxr-xr-x 2 shighi shighi 4096 Jun 17 22:46 .
+drwxr-xr-x 6 shighi shighi 4096 Jun 17 20:08 ..
+-rwxr-xr-x 1 shighi shighi   32 Jun 17 21:08 0-hello_world
+-rwxr-xr-x 1 shighi shighi   28 Jun 17 20:43 1-confused_smiley
+-rwxr-xr-x 1 shighi shighi   28 Jun 17 21:03 2-hellofile
+-rwxr-xr-x 1 shighi shighi   39 Jun 17 21:12 3-twofiles
+-rwxr-xr-x 1 shighi shighi   35 Jun 17 21:15 4-lastlines
+-rwxr-xr-x 1 shighi shighi   35 Jun 17 21:22 5-firstlines
+-rwxr-xr-x 1 shighi shighi   58 Jun 17 22:01 6-third_line
+-rwxr-xr-x 1 shighi shighi   81 Jun 17 22:41 7-file
+-rwxr-xr-x 1 shighi shighi   36 Jun 17 22:45 8-cwd_state
+-rw-r--r-- 1 shighi shighi   12 Jun 17 22:41 \*\\'"Best School"\'\\*$\?\*\*\*\*\*\:)
+-rw-r--r-- 1 shighi shighi  801 Jun 17 22:00 iacta
+-rw-r--r-- 1 shighi shighi    0 Jun 17 22:46 ls_cwd_content
