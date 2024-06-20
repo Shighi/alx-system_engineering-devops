@@ -1,2 +1,2 @@
 #!/bin/bash
-cut -c1 "An Acrostic" | tr -d '\n'
+cat "An Acrostic" | tr -d '\n' | xargs -d'\n' | cut -c1-9
