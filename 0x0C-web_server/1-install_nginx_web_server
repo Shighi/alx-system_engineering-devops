@@ -1,24 +1,32 @@
 #!/usr/bin/env bash
-# Script that installs and configures Nginx web server
+# Script to install and configure Nginx web server
 
-# Update package list and install nginx with -y flag
+# Exit on any error
+set -e
+
+# Update package list and install nginx
+export DEBIAN_FRONTEND=noninteractive
 apt-get -y update
 apt-get -y install nginx
 
-# Ensure nginx is running
+# Ensure Nginx is running
 service nginx start
 
-# Create a default index.html with "Hello World!"
+# Configure the root page to display "Hello World!"
 echo "Hello World!" > /var/www/html/index.html
 
-# Configure nginx to listen on port 80
-sed -i 's/listen \[::\]:80 default_server;/listen 80 default_server;/g' /etc/nginx/sites-available/default
+# Ensure Nginx is configured to listen on port 80
+if ! grep -q "listen 80 default_server;" /etc/nginx/sites-available/default; then
+    sed -i 's/listen \[::\]:80 default_server;/listen 80 default_server;/g' /etc/nginx/sites-available/default
+fi
 
-# Ensure proper permissions
+# Set correct permissions for the web root
 chown -R www-data:www-data /var/www
 
-# Restart Nginx without using systemctl
+# Restart Nginx to apply changes
 service nginx restart
 
-# Allow nginx through firewall
-ufw allow 'Nginx HTTP'
+# Allow traffic on port 80
+ufw allow 80/tcp
+
+echo "Nginx is installed and serving 'Hello World!' on port 80."
