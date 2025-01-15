@@ -1,9 +1,44 @@
 #!/usr/bin/env bash
-#Configure a new Nginx server so that /redirect_me is redirecting to another page
+# Configure Nginx server with a 301 redirect for /redirect_me
 
-sudo apt-get -y update
-sudo apt-get -y install nginx
-sudo ufw allow 'Nginx HTTP'
-echo "Hello World" | sudo tee /var/www/html/index
-sudo sed -i '/listen 80 default_server/a rewrite ^/redirect_me https://www.youtube.com/ permanent;' /etc/nginx/sites-available/default
-sudo service nginx restart
+# Update package list and install nginx
+apt-get update -y
+apt-get install nginx -y
+
+# Create default index page
+echo "Hello World!" > /var/www/html/index.html
+
+# Configure nginx with redirect
+printf %s "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    
+    server_name _;
+    
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+    
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}" > /etc/nginx/sites-available/default
+
+# Create symbolic link if it doesn't exist
+ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+
+# Ensure proper permissions
+chown -R www-data:www-data /var/www
+
+# Test nginx configuration
+nginx -t
+
+# Restart nginx service
+if [ "$(pgrep -c nginx)" -le 0 ]; then
+    service nginx start
+else
+    service nginx restart
+fi
