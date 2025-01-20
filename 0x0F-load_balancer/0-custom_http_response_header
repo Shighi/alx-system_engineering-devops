@@ -1,4 +1,5 @@
-onfigures a new Ubuntu machine with Nginx and custom HTTP header
+#!/usr/bin/env bash
+#Configures a new Ubuntu machine with Nginx and custom HTTP header
 # The custom header X-Served-By will contain the hostname of the server
 
 # Update package lists and install nginx
