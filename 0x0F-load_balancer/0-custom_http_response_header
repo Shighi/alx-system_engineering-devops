@@ -1,68 +1,39 @@
 #!/usr/bin/env bash
-#Configures a new Ubuntu machine with Nginx and custom HTTP header
-# The custom header X-Served-By will contain the hostname of the server
+#Configure Nginx with custom header X-Served-By
 
-# Update package lists and install nginx
+# Update package list and install nginx if not installed
 apt-get update
 apt-get install -y nginx
 
-# Create nginx web directory if it doesn't exist
-mkdir -p /var/www/html
-
-# Set permissions
-chown -R "$USER":"$USER" /var/www/html
-chmod -R 755 /var/www/html
-
-# Create a basic index page
+# Create nginx default page
 echo "Hello World!" > /var/www/html/index.html
 
-# Create error page
-echo "Ceci n'est pas une page" > /var/www/html/404.html
-
-# Get the hostname of the server
+# Get hostname
 HOSTNAME=$(hostname)
 
-# Backup default configuration if it exists
+# Configure nginx with custom header
+CONFIG_TEXT="server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    server_name _;
+    add_header X-Served-By $HOSTNAME;
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}"
+
+# Backup original config if it exists
 if [ -f /etc/nginx/sites-available/default ]; then
     cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
 fi
 
-# Create new Nginx configuration with custom header
-cat > /etc/nginx/sites-available/default << EOF
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-    
-    server_name _;
-    
-    # Custom HTTP response header
-    add_header X-Served-By $HOSTNAME;
-    
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-    
-    # Custom 404 error page
-    error_page 404 /404.html;
-    location = /404.html {
-        internal;
-    }
-    
-    # Redirect for /redirect_me
-    location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-}
-EOF
+# Write new config
+echo "$CONFIG_TEXT" > /etc/nginx/sites-available/default
 
-# Create symbolic link if not already exists
-ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
-
-# Test Nginx configuration
+# Test nginx configuration
 nginx -t
 
-# Restart Nginx service
+# Restart nginx to apply changes
 service nginx restart
