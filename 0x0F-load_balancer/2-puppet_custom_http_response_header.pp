@@ -1,42 +1,29 @@
+# Custom HTTP header in a nginx server
 
-# Puppet manifest to configure Nginx with custom header
-
-# Update package repositories
-exec { 'update_packages':
+# update ubuntu server
+exec { 'update server':
   command  => 'apt-get update',
+  user     => 'root',
   provider => 'shell',
 }
-
-# Install Nginx
+->
+# install nginx web server on server
 package { 'nginx':
-  ensure  => installed,
-  require => Exec['update_packages'],
+  ensure   => present,
+  provider => 'apt'
 }
-
-# Get hostname
-$hostname = $facts['hostname']
-
-# Create Nginx configuration file
-file { '/etc/nginx/sites-available/default':
-  ensure  => file,
-  content => "server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-    server_name _;
-    add_header X-Served-By ${hostname};
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-}",
-  require => Package['nginx'],
-  notify  => Service['nginx'],
+->
+# custom Nginx response header (X-Served-By: hostname)
+file_line { 'add HTTP header':
+  ensure => 'present',
+  path   => '/etc/nginx/sites-available/default',
+  after  => 'listen 80 default_server;',
+  line   => 'add_header X-Served-By $hostname;'
 }
-
-# Ensure Nginx service is running
+->
+# start service
 service { 'nginx':
-  ensure  => running,
+  ensure  => 'running',
   enable  => true,
-  require => File['/etc/nginx/sites-available/default'],
+  require => Package['nginx']
 }
