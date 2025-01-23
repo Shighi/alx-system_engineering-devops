@@ -1,30 +1,15 @@
 #!/usr/bin/env bash
-# Configure Nginx with custom header X-Served-By
-
-# Exit immediately if a command exits with a non-zero status
-set -e
-
-# Update package list and install nginx
+# Configures Nginx to add a custom HTTP header X-Served-By on web servers
 apt-get update -y
 apt-get install -y nginx
 
-# Create a simple index page
-echo "Hello World!" > /var/www/html/index.html
+# Remove existing X-Served-By headers and add a single correct header
+sed -i '/add_header X-Served-By/d' /etc/nginx/sites-available/default
+sed -i '/server_name _;/a \        add_header X-Served-By $hostname;' /etc/nginx/sites-available/default
 
-# Allow HTTP traffic
-ufw allow 'Nginx HTTP'
+# Sync changes to sites-enabled
+cp /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# Get hostname
-HOSTNAME=$(hostname)
-
-# Configure nginx with custom header
-sed -i "/server_name/a \    add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/default
-
-# Test nginx configuration
+# Test and restart Nginx
 nginx -t
-
-# Restart nginx
 systemctl restart nginx
-
-# Enable nginx to start on boot
-systemctl enable nginx
