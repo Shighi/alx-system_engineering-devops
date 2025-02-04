@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Generates MySQL dump and creates compressed archive
+
+# Check if password argument is provided
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 mysql_password"
+    exit 1
+fi
+
+# Set variables
+PASSWORD="$1"
+DATE=$(date +%d-%m-%Y)
+
+# Create MySQL dump
+mysqldump -u root -p"$PASSWORD" --all-databases > backup.sql
+
+# Create compressed archive
+tar -czf "$DATE.tar.gz" backup.sql
