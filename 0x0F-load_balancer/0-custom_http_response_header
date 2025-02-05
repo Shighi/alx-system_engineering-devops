@@ -1,15 +1,44 @@
 #!/usr/bin/env bash
-# Configures Nginx to add a custom HTTP header X-Served-By on web servers
-apt-get update -y
+# Configures Nginx with a custom header on a new Ubuntu machine
+
+# Update package list and install nginx if not already installed
+apt-get update
 apt-get install -y nginx
 
-# Remove existing X-Served-By headers and add a single correct header
-sed -i '/add_header X-Served-By/d' /etc/nginx/sites-available/default
-sed -i '/server_name _;/a \        add_header X-Served-By $hostname;' /etc/nginx/sites-available/default
+# Get the hostname of the machine
+HOSTNAME=$(hostname)
 
-# Sync changes to sites-enabled
-cp /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+# Backup and create a new Nginx configuration
+nginx_conf="/etc/nginx/sites-available/default"
+cp "$nginx_conf" "$nginx_conf.backup"
 
-# Test and restart Nginx
+# Create a new configuration with the custom header
+cat > "$nginx_conf" << EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    
+    server_name _;
+    
+    add_header X-Served-By $HOSTNAME;
+    
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOF
+
+# Test Nginx configuration
 nginx -t
+
+# Restart Nginx to apply changes
 systemctl restart nginx
+
+# Ensure Nginx starts on boot
+systemctl enable nginx
+
+# Allow Nginx through firewall
+ufw allow 'Nginx HTTP'
