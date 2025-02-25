@@ -38,3 +38,4 @@ file_line { 'Deny Password Auth':
 # [\s]+ at least one whitespace character
 # (yes|no) with the value "yes" or the value "no"
 # $      end of the line
+# comment
